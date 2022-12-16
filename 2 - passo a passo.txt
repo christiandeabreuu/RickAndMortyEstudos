@@ -1,0 +1,169 @@
+criei a pasta repository dentro de data e criei o RickAndMorty repository
+chamando a funcao da api
+class RickAndMortyRepository {
+    suspend fun getAllCharactersNetwork(): CharacterResponse {
+        return RetrofitService.apiService.getAllCharactersNetwork()
+    }
+}
+--------------------------
+criar uma pasta view state na raiz do projeto pq o usecase vai retornar um view state
+sealed class ViewState<out T> {
+    data class Success<T>(val data: T) : ViewState<T>()
+    data class Error(val throwable: Throwable) : ViewState<Nothing>()
+    data class Loading(val loading: Boolean) : ViewState<Nothing>()
+}
+------------------------------------------
+dentro de domain vou criar a CharacterUseCase, instanciar a classe do repository 
+dentro da use case fazer o tratamento da funcao usando o try catch
+class CharacterUseCase {
+    private val repository = RickAndMortyRepository()
+
+    suspend fun getAllCharactersNetwork(): ViewState<List<CharacterResult>>{
+        return try {
+            val character = repository.getAllCharactersNetwork()
+            ViewState.Success(character.results)
+        }catch (ex: Exception){
+            ViewState.Error(Exception("Não foi possivel carregar a lista de characters"))
+        }
+    }
+}
+-----------------------------------------------
+dentro de ui, criar a classe view model, que vai herdar de viewmodel : ViewModel()
+instancia o use case do characterusecase
+criei um mutable live data e um live data 
+private val characterUseCase = CharacterUseCase()
+private val _characterListState = MutableLiveData<ViewState<List<CharacterResult>>>()
+    val characterListState: LiveData<ViewState<List<CharacterResult>>> get() = _characterListState
+e criei a funcao pra pegar os characters 
+fun getAllCharactersNetwork() {
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    characterUseCase.getAllCharactersNetwork()
+                }
+                _characterListState.value = response
+            } catch (ex: Exception) {
+                _characterListState.value =
+                    ViewState.Error(Throwable("Não foi possível carregar a lista da internet! vm"))
+            }
+        }
+    }
+-------------------------------------------------------
+no fragment , instanciar a viewmodel 
+ private val viewModel: CharacterViewModel by lazy {
+        ViewModelProvider(this)[CharacterViewModel::class.java]
+    }
+vou chamar a funcao da viewmodel dentro da onViewCreated
+e vou criar um observer pra view model 
+mas futuramente tenho que criar um adapter e iniciar o recyclerview
+   private fun getAllCharactersNetwork() {
+        viewModel.getAllCharactersNetwork()
+    }
+
+    private fun initObserver() {
+        viewModel.characterListState.observe(this.viewLifecycleOwner) {
+            when (it) {
+                is ViewState.Success -> {
+                    TODO()
+//                adapter.submitList(it.data)
+//                oldAdapter.updateList(it.data.toMutableList())
+                }
+                is ViewState.Error -> {
+                    Toast.makeText(
+                        context,
+                        "Nao foi possivel carregar as imagens",
+                        Toast.LENGTH_LONG
+                    ).show()
+//                Snackbar.make(binding.root, "Nao foi possivel carregar as imagens", Snackbar.LENGTH_LONG).show()
+                }
+                else -> {}
+            }
+        }
+    }
+---------------------------------------------
+criei o item_character_layout usando o cardview e depois um constraint
+---------------------------------------------
+agora vou criar o adapter do tipo antigo
+
+class CharacterAdapter : RecyclerView.Adapter<CharacterAdapter.ViewHolder>() {
+
+criei a clase adater que é do tipo Recycler.adapter<nomeAdapter.ViewHolder>()
+criar a classe viewholder dentro do adapter e falar que é do tipo Recyclerview.viewholder
+depois colocar o binding dentro dela
+ inner class ViewHolder(val binding: ItemCharacterBinding) :
+        RecyclerView.ViewHolder(binding.root) 
+
+depois implementar membros da classe adapter
+
+iniciar uma lista dentro do adapter
+private var listCharacter = mutableListOf<CharacterResult>()
+
+dentro do oncreateviewholder declarar o binding do item_layout
+override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding =
+            ItemCharacterBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
+    }
+
+dentro do onbind vai gerenciar o que vai ser mostrado na tela e a funcao dentro do viewholder
+ override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = listCharacter[position]
+        holder.showInfo(item)
+    }
+
+vai falar o tamanho da lista que vai ser o tamanho total da lista
+override fun getItemCount(): Int = listCharacter.size
+
+dentro da classe viewholder vai pegar as informcacoes e a imagem
+inner class ViewHolder(val binding: ItemCharacterBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun showInfo(characterResult: CharacterResult) {
+            Picasso.get().load(characterResult.image).into(binding.ivItemCharacter)
+            binding.tvItemNameCharacter.text = characterResult.name
+        }
+    }
+
+depois tem que fazer uma funcao pra atualizar a lista e chamar na view
+fun updateList(newList: MutableList<CharacterResult>) {
+        listCharacter = newList
+        notifyDataSetChanged()
+    }
+
+-----------------------------------------------------------
+na view vai instanciar o adapter 
+private val characterAdapter: CharacterAdapter by lazy {
+        CharacterAdapter()
+    }
+
+atualizar o observer no viewstate de sucesso
+    private fun initObserver() {
+        viewModel.characterListState.observe(this.viewLifecycleOwner) {
+            when (it) {
+                is ViewState.Success -> {
+       -------->     characterAdapter.updateList(it.data.toMutableList())  <-------
+                }
+                is ViewState.Error -> {
+                    Toast.makeText(
+                        context,
+                        "Nao foi possivel carregar as imagens",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                else -> {}
+            }
+        }
+    }
+}
+
+inicializar o recyclerview
+   private fun initRecyclerview() {
+        binding.rvCharacterList.adapter = characterAdapter
+        binding.rvCharacterList.layoutManager = GridLayoutManager(context, 2)
+    }
+
+e chamar as funcoes na onviewcreated
+getAllCharactersNetwork()
+        initObserver()
+        initRecyclerview()
+

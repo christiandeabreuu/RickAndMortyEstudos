@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MyAppBancoDados</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_episodes_list">fragment <font color="#ef4123">EPISODES</font> list</string>
+    <string name="gender"> <font color="#ef4123">"GÊNERO : "</font> </string>
+</resources>

@@ -1,0 +1,3 @@
+nao consegui fazer funcionar a funcao pra esconder o bottom navigation da tela de login 
+criei outro fragment e fiz outro navigation, um pro login e outro pro rick and morty 
+add a activity no navigation e criei uma action da tela de login pra activity do outro navigation

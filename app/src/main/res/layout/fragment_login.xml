@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login.ui.login.LoginFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etUserEmailInsert"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginEnd="30dp"
+            android:fontFamily="@font"
+            android:hint="email"
+            android:selectAllOnFocus="true"
+            app:boxBackgroundColor="@color/white"
+            app:helperTextTextColor="@color/red_zup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUserEmail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textEmailAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <!--            android:fontFamily=""-->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etPasswordInsert"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:focusableInTouchMode="true"
+            android:hint="password"
+            app:boxBackgroundColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etUserEmailInsert"
+            app:passwordToggleContentDescription="password visibility"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/darkBlue_zup">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ems="15"
+                android:inputType="textPassword"
+                android:paddingEnd="40dp" />
+
+            <Button
+                android:id="@+id/bvLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_margin="25dp"
+                android:backgroundTint="@color/red_zup"
+                android:text="ENTRAR"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etPasswordInsert" />
+
+            <TextView
+                android:id="@+id/tvInformation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="25dp"
+
+                android:lineSpacingExtra="8dp"
+                android:text="Faça seu Login! \n ou crie uma conta agora mesmo!"
+                android:textAlignment="center"
+                android:textColor="@color/blue_zup"
+                android:textSize="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/bvLogin"
+                app:layout_constraintStart_toStartOf="@+id/bvLogin"
+                app:layout_constraintTop_toBottomOf="@+id/bvLogin" />
+
+            <Button
+                android:id="@+id/bvRegisterNow"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_margin="25dp"
+                android:backgroundTint="@color/lightGray_zup"
+
+                android:text="CRIAR CONTA AGORA"
+                android:textAlignment="center"
+                android:textColor="@color/blue_zup"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/tvInformation"
+                app:layout_constraintStart_toStartOf="@+id/tvInformation"
+                app:layout_constraintTop_toBottomOf="@id/tvInformation" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

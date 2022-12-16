@@ -1,0 +1,164 @@
+ passo a passo 
+
+pensar e estruturar no app, criar arquitetura 
+
+mvvm, splash, navigation, recyclerview, retrofit, room , login firebase, coil
+flow
+
+colocar as dependencias e a permissao da internet
+nao esquecer
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+
+nem do buildFeatures {
+        viewBinding true
+    }
+
+criar plash
+private val timer = Timer()
+
+class SplashActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash)
+
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                jump()
+            }
+        }, 3000)
+    }
+
+    private fun jump() {
+        timer.cancel()
+        startActivity(Intent(this, InitialActivity::class.java))
+        this.finish()
+    }
+}
+e depois mudar no manifest 
+e nao esquecer de colocar a permissao de internet
+---------------------------------------------------------------------------------------------
+criei 3 fragments e fiz o binding 
+fiz o fragment na mao e coloquei o R.id.layout no construtor
+depois fiz o layout tbm na mao e referenciei na classe
+---------------------------------------------------------------------------------------------
+navigation
+cliquei com o botao direito em cima da pasta res
+new - android resource file - nav_graph tipo/pasta navigation
+no layout da activity initial
+
+<androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/nav_graph"/>
+
+no nav_graph so coloquei os fragments, mas nao coloquei nenhuma action por enquanto,
+vou mudar de tela usando o bottom navigation 
+na classe fragment, coloquei o tools:layout="@layout/fragment_character_list" pra visualizar tela
+mas tbm coloquei na classe acitivity initial 
+private val navController: NavController by lazy { findNavController(R.id.nav_host_fragment) }
+--------------------------------------------------------------------------------------------
+bottom navigation
+cliquei com o botao direito em cima da pasta res
+new - android resource file - bottom_navigation_menu tipo/pasta menu
+no layout da activity initial
+<com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/teal_700"
+        app:labelVisibilityMode="unlabeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
+dentro da activity tem o nav controller e tem a funcao do bottom navigation
+
+private val navController: NavController by lazy { findNavController(R.id.nav_host_fragment) }
+
+ private fun setBottomNavigation() {
+        binding.bottomNavigation.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.id_character -> {
+                    navController.navigate(R.id.characterListFragment)
+                    true
+                }
+                R.id.id_episode -> {
+                    navController.navigate(R.id.episodesListFragment)
+                    true
+                }
+                R.id.id_location -> {
+                    navController.navigate(R.id.locationsListFragment)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+fazendo a navegacao pelo bottom navigation usando o id
+criei 3 icones na pasta drawable pra usar no bottom navigation
+e dentro do bottom_navigation_menu
+   <item
+        android:id="@+id/id_character"
+        android:enabled="true"
+        android:icon="@drawable/ic_person"
+        android:title="1" />
+    <item
+        android:id="@+id/id_episode"
+        android:enabled="true"
+        android:icon="@drawable/ic_android_black"
+        android:title="2" />
+    <item
+        android:id="@+id/id_location"
+        android:enabled="true"
+        android:icon="@drawable/ic_location"
+        android:title="3" />
+-------------------------------------------------------------------------------------------
+comecei a mexer com o retrofit 
+fui na api do rickandmorty peguei o retorno do character, episode e location
+joguei no convertToJson, dentro da pasta model pra pegar os dados da api 
+mudei o nome de algumas classes e alguns retornos com o serialized name
+dentro de remote fiz o retrofitService com a base url do rick and morty
+class RetrofitService {
+    companion object {
+        const val BASE_URL = "https://rickandmortyapi.com/api/"
+
+        private val retrofit: Retrofit by lazy {
+            //Configuração dos parametros de conexão
+            val httpClient = OkHttpClient.Builder()
+            httpClient.readTimeout(30, TimeUnit.SECONDS)
+            httpClient.connectTimeout(30, TimeUnit.SECONDS)
+            httpClient.writeTimeout(30, TimeUnit.SECONDS)
+
+            //Se estivermos em modo DEBUG habilitamos os logs
+            if (BuildConfig.DEBUG) {
+                val logInterceptor = HttpLoggingInterceptor()
+                logInterceptor.level = HttpLoggingInterceptor.Level.BODY
+                httpClient.addInterceptor(logInterceptor)
+            }
+
+            //Cria o builder do Retrofit
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build()
+        }
+
+        @JvmStatic
+        val apiService: RickAndMortyAPI
+            get() = retrofit.create(RickAndMortyAPI::class.java)
+    }
+}
+e depois fiz a interface do RickAndMortyAPI
+
+@GET("character")
+    suspend fun getAllCharactersNetwork(): CharacterResponse
+------------------------------------------------------------

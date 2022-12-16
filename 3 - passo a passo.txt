@@ -1,0 +1,330 @@
+
+criei os layouts do fragment login 
+campos de email e senha - botao de entrar - texto e botao pra ir pro registro
+
+layout do fragment de registro
+campos nome - email - senha e confirmacao de senha - botao de criar conta - 
+edit como botao pra voltar pro loginn
+
+na feature de login crie os fragments de login e register e as viewmodel
+nao esquecer que a classe viewmodel tem que herdar de viewmodel se nao vai dar erro
+LoginViewModel : ViewModel()
+
+instanciar viewmodel 
+
+	dentro da onview created
+	registerButton()
+        loginButton()
+        initObservers()
+
+	funcao do botao pra ir pra tela de  registro
+    private fun registerButton() {
+        binding.bvRegisterNow.setOnClickListener {
+            goToRegister()
+        }
+    }
+-----------------------------------
+dar inicio a criaçao da tela de detalhe 
+ja criei o fragment e o layout 
+
+	funcao do botao de fazer login, esconder teclado, validar os campos
+    private fun loginButton() {
+        binding.bvLogin.setOnClickListener {
+            hideKeyboard()
+            if (validateField()) {
+                val user = getDataUser()
+                viewModel.validateDataUser(user)
+            }
+        }
+    }
+
+ 	private fun goToRegister() {
+        NavHostFragment.findNavController(this)
+            .navigate(R.id.action_loginFragment_to_registerFragment)
+    }
+	funcoes de esconder o teclado
+	private fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+	
+	funcao de validar os campos de login e senha 
+	private fun validateField(): Boolean {
+        return when {
+            (binding.etUserEmail.text.toString().isEmpty() && binding.etPassword.text.toString()
+                .isEmpty()) -> {
+                binding.etUserEmail.error = "Campo obrigatório: Email"
+                binding.etPassword.error = "Campo obrigatório: Senha"
+                false
+            }
+            binding.etUserEmail.text.toString().isEmpty() -> {
+                binding.etUserEmail.error = "Campo obrigatório: Email"
+                false
+            }
+            binding.etPassword.text.toString().isEmpty() -> {
+                binding.etPassword.error = "Campo obrigatório: Senha"
+                false
+            }
+            else -> true
+        }
+    }
+
+	criar uma classe user dentro da feature login , domain , model 
+	e nao esquecer das dependencias do parcelize
+    private fun getDataUser(): User {
+        return User(
+            email = binding.etUserEmail.text.toString(),
+            password = binding.etPassword.text.toString()
+        )
+    }
+
+	fazer o observer 
+        private fun initObservers() {
+            viewModel.loginState.observe(this.viewLifecycleOwner) {
+                goToHome(it)
+            }
+
+            viewModel.errorState.observe(this.viewLifecycleOwner) {
+                hideKeyboard()
+                Toast.makeText(context, LOGIN_PASSWORD_INCORRECT, Toast.LENGTH_SHORT).show()
+            }
+        }
+----------------------------------------------------
+na register fragement - declarar o binding - instanciar viewmodel que vai herdar de viewModel()
+
+dentro da onviewCreated()
+	validateRegister()
+        returnToLoginButton()
+        initObservers()
+	
+	funcao pra validar o registro, se for sucesso entra na viewmodel na funcao de pegar dados 
+	se der erro, vai entrar na funcao de mostrar erros
+	    private fun validateRegister() {
+        binding.bvRegisterNow.setOnClickListener {
+            hideKeyboard()
+            val user = getData()
+            if (user != null) {
+//                viewModel.validateDataUser(user)
+            } else {
+                showFieldsError()
+            }
+        }
+    }
+	
+	funcao que retorna a tela de login
+	private fun returnToLoginButton() {
+        binding.tvInformation.setOnClickListener {
+            returnToLogin()
+        }
+    }
+	vai pra tela de login e passa um bundle de User
+	private fun goToLogin(user: User) {
+        val bundle = bundleOf("USER_KEY" to user)
+        NavHostFragment.findNavController(this)
+            .navigate(R.id.action_registerFragment_to_loginFragment, bundle)
+    }
+	
+	funcao 	que navega pra tela de login
+	 private fun returnToLogin() {
+        NavHostFragment.findNavController(this)
+            .navigate(R.id.action_registerFragment_to_loginFragment)
+    }
+
+	funcao de pegar os dados do usuario da tela de registro
+	 private fun getData(): User? {
+        val username = binding.etUserName.text.toString()
+        val userEmail = binding.etUserEmail.text.toString()
+        val password = binding.etPassword.text.toString()
+        val passwordConfirm = binding.etPasswordConfirmation.text.toString()
+
+        if (username.isNotEmpty() && userEmail.isNotEmpty() && password.isNotEmpty() && passwordConfirm.isNotEmpty()) {
+            return User(
+                name = username,
+                email = userEmail,
+                password = password,
+                passwordConfirmation = passwordConfirm
+            )
+        }
+        return null
+    }	
+
+	funcao que mostra os campos de erro
+	  private fun showFieldsError() {
+        if (binding.etUserName.text.toString().isEmpty()) {
+            binding.etUserName.error = "Campo obrigatório: Nome"
+        }
+
+        if (binding.etUserEmail.text.toString().isEmpty()) {
+            binding.etUserEmail.error = "Campo obrigatório: Email"
+        }
+
+        if (binding.etPassword.text.toString().isEmpty()) {
+            binding.etPassword.error = "Campo obrigatório: Senha"
+        }
+
+        if (binding.etPasswordConfirmation.text.toString().isEmpty()) {
+            binding.etPasswordConfirmation.error = "Campo obrigatório: Confirmação da senha"
+        }
+    }
+
+	funcao de esconder o teclado
+	 private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+		fazer o observer
+	    private fun initObservers() {
+        viewModel.registerState.observe(this.viewLifecycleOwner) {
+            goToLogin(it)
+        }
+
+        viewModel.errorState.observe(this.viewLifecycleOwner) {
+            if (it == "Email inválido")
+                binding.etUserEmail.error = "Email inválido"
+        }
+    }
+-------------------------------------------------------------------------------
+na activity inicial 
+
+criei a funcao pra esconder e mostrar o bottom navigation
+ private fun showBottomNav() {
+        binding.bottomNavigation.visibility = View.VISIBLE
+    }
+
+    private fun hideBottomNav() {
+        binding.bottomNavigation.visibility = View.GONE
+    }
+--------------------------------------------------------------------------------
+mas deu alguma merda que eu nao nao sei, mas nao to conseguindo esconder o bottom navigation
+na tela de login e registro, uma opcao seria fazer outra acitivty com o login e registro
+depois mudar pra outra acitivty dos personagens
+--------------------------------------------------------------------------
+enquanto isso fui fazer a progress bar
+
+chamei na viewmodel
+val loading = MutableLiveData<ViewState<Boolean>>()
+
+fiz essas alteraçoes na chamada da viewModel
+ fun getAllCharactersNetwork() {
+  -->   loading.value = ViewState.Loading(true) <---------------------
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    characterUseCase.getAllCharactersNetwork()
+                }
+                _characterListState.value = response
+            } catch (ex: Exception) {
+                _characterListState.value =
+                    ViewState.Error(Throwable("Não foi possível carregar a lista da internet! vm"))
+----->         }finally {	<---------------------
+----->               loading.value = ViewState.Loading(false)      <---------------------
+            }
+        }
+    }
+
+depois no fragment, fiz um observer do loading dentro do initObserver
+
+ viewModel.loading.observe(this.viewLifecycleOwner) {
+            when (it) {
+                is ViewState.Loading -> {
+                    binding.pbLoading.isVisible = it.loading == true
+                }
+                else -> {}
+            }
+        }
+ e nao esquecer de colocar o progress bar no layout 
+
+
+-------------------------------------------
+inicializando friebase login e senha , entrar no firebase 
+clicar em novo projeto 
+colocar o nome do projeto - igual do app MyAppBancoDados
+nao ativar o analytcs
+clicar em android
+colocar o nome do pacote com.example.myappbancodados
+pelido do app  pode ser o mesmo nome - MyAppBancoDados
+baixar o arquivo json
+colocar o app com visualizacao de project e colar dentro da pasta app google.services.json
+build.gradle app - plugins - id 'com.google.gms.google-services'
+build.gradle project 
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.14'
+    }
+}
+			-----------------------------------
+depois colocar nas dependencias do build.gradle do app 
+
+	implementation platform('com.google.firebase:firebase-bom:31.1.1')
+
+         implementation 'com.google.firebase:firebase-auth-ktx'
+--------------------------------------------------------------------------------
+criando a tela de detalhe - fiz a classe e o xml 
+criei o layout 
+fui na nav_graph e add a view - criei uma acao entre a lista e o detalhe 
+
+criei a funcao na classe de ir pra tela do detalhe passando bundle
+ private fun goToCharacterDetail(character: CharacterResult) {
+        val bundle = bundleOf("KEY" to character)
+
+        NavHostFragment.findNavController(this).navigate(
+            R.id.action_characterListFragment_to_characterDetailFragment, bundle
+        )
+    }
+chamei a funcao na onview created gotocharacterdetail()
+
+fui no adapter, coloquei no construtor o click 
+class CharacterAdapter(private val clickDetail : (CharacterResult) -> Unit,) : 
+
+depois fui na onbindingViewHolder adicionei
+override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = listCharacter[position]
+        holder.showInfo(item)
+        holder.binding.cvItemCharacter.setOnClickListener {  <--------
+        clickDetail(item)    <-----------
+        }
+---------------------------------
+no fragment  da list character 
+onde estou iniciando o adapter , adicionei  na chamado do adapter 
+
+private val characterAdapter: CharacterAdapter by lazy {
+        CharacterAdapter(this::goToCharacterDetail) <-----------------
+    }
+
+-----------------------------------------------
+
+na fragment do detail
+
+    private fun getCharacterDetail() {
+        val character = arguments?.getParcelable<CharacterResult>("KEY")
+
+        character?.let {
+            Picasso.get().load(it.image).into(binding.ivDetailCharacter)
+            binding.tvDetailName.text = "NAME : " + it.name
+            binding.tvDetailStatus.text = it.status
+            binding.tvDetailSpecies.text = it.species
+            binding.tvDetailGender.text = it.gender
+            binding.tvDetailOrigin.text = "Id : " + it.id.toString()
+            binding.tvDetailId.text = it.id.toString()
+            binding.tvDetailType.text = it.type
+
+        }
+    }
+
+e chamei na onview created
+ 
+
+
