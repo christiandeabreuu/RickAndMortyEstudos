@@ -1,5 +1,6 @@
 package com.example.myappbancodados
 
+
 import android.app.Application
 import com.example.myappbancodados.di.characterUseCaseModules
 import com.example.myappbancodados.di.rickAndMortyRepository
