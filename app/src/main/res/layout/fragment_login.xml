@@ -20,6 +20,10 @@
             android:layout_marginEnd="30dp"
             android:fontFamily="@font"
             android:hint="email"
+
+            app:endIconDrawable="@drawable/ic_email"
+            app:endIconMode="password_toggle"
+
             android:selectAllOnFocus="true"
             app:boxBackgroundColor="@color/white"
             app:helperTextTextColor="@color/red_zup"

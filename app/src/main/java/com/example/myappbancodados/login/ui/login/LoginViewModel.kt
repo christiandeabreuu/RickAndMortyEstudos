@@ -6,10 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.example.myappbancodados.login.data.local.model.User
 import com.example.myappbancodados.login.domain.repository.AuthenticationRepository
 import com.example.myappbancodados.login.domain.usecase.LoginUseCase
+import com.example.myappbancodados.viewstate.ViewState
 
-class LoginViewModel: ViewModel() {
+class LoginViewModel : ViewModel() {
     private val repository = AuthenticationRepository()
-    private val loginUseCase = LoginUseCase()
+    private val useCaseLogin = LoginUseCase()
 
     private var _loginState = MutableLiveData<User>()
     val loginState: LiveData<User> = _loginState
@@ -27,13 +28,13 @@ class LoginViewModel: ViewModel() {
 
     private fun loginUser(user: User) {
         try {
-            repository.loginUser(user.email, user.password).addOnSuccessListener {
-
+            repository.loginUser(
+                user.email,
+                user.password
+            ).addOnSuccessListener {
                 _loginState.value = user
-
-
             }.addOnFailureListener {
-                _errorState.value = "Ops! Ocorreu um erro ao criar o usuário!" + it.message
+                _errorState.value = "LOGIN_ERROR_MESSAGE" + it.message
             }
         } catch (ex: Exception) {
             _errorState.value = ex.message

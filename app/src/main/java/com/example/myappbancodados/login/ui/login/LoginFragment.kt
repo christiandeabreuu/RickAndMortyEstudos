@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.myappbancodados.R
 import com.example.myappbancodados.databinding.FragmentLoginBinding
 import com.example.myappbancodados.login.data.local.model.User
+import com.example.myappbancodados.viewstate.ViewState
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
     private lateinit var binding: FragmentLoginBinding
@@ -24,8 +25,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLoginBinding.inflate(inflater)
         return binding.root
@@ -40,9 +40,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private fun initObservers() {
         viewModel.loginState.observe(this.viewLifecycleOwner) {
+
             goToHome(it)
         }
-
         viewModel.errorState.observe(this.viewLifecycleOwner) {
             hideKeyboard()
             Toast.makeText(context, "LOGIN_PASSWORD_INCORRECT", Toast.LENGTH_SHORT).show()
@@ -54,7 +54,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         NavHostFragment.findNavController(this)
             .navigate(R.id.action_loginFragment_to_initialActivity, bundle) // , bundle
     }
-
 
     private fun Fragment.hideKeyboard() {
         view?.let { activity?.hideKeyboard(it) }

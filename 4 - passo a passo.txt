@@ -1,3 +1,40 @@
 nao consegui fazer funcionar a funcao pra esconder o bottom navigation da tela de login 
 criei outro fragment e fiz outro navigation, um pro login e outro pro rick and morty 
 add a activity no navigation e criei uma action da tela de login pra activity do outro navigation
+agora tem duas activitys initial login e initial rm , cada uma em sua feature
+
+-------------------------------------------
+proximo passo injecao de dependencia
+criar pacote di 
+dentro do pacote di - criar os modulos 
+depois criar uma classe MyApp na raiz que vai estender : Application()
+criar o on create e dar start no koin passando os modulos 
+class MyApp : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        startKoin {
+            androidContext(this@MyApp)
+
+            modules(viewModelModules, characterUseCaseModules, rickAndMortyRepository)
+        }
+    }
+}
+
+dentro do manifest colocar o android name 
+ android:name=".MyApp"
+
+-----------------------------------------------
+ir fazer a inversao de dependencia colocando as classe instanciadas dentro do contrutor pra 
+depois fazer a injeca de dependencia dentro dos modulos
+
+comecei pela viewmodel, no fragment mudei a instancia da viewmodel 
+//	  private val viewModel: CharacterViewModel by lazy {
+//        ViewModelProvider(this)[CharacterViewModel::class.java]
+//    }
+    private val viewModel: CharacterViewModel by viewModel()  <-----
+
+instancie  viewmodel chamando a  by viewmodel() do koin
+
+-------------------------------------------------------------------------

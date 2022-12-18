@@ -10,7 +10,7 @@ import com.example.myappbancodados.login.domain.usecase.RegisterUseCase
 class RegisterViewModel : ViewModel() {
 
     private val authenticationRepository = AuthenticationRepository()
-    private val registerUseCase = RegisterUseCase()
+    private val useCaseRegister = RegisterUseCase()
 
     private var _registerState = MutableLiveData<User>()
     val registerState: LiveData<User> = _registerState

@@ -8,17 +8,20 @@ import com.example.myappbancodados.rickandmorty.data.model.CharacterResult
 import com.example.myappbancodados.rickandmorty.domain.usecase.CharacterUseCase
 import com.example.myappbancodados.viewstate.ViewState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CharacterViewModel(private val characterUseCase : CharacterUseCase) : ViewModel() {
-//    private val characterUseCase = CharacterUseCase()
-    private val _characterListState = MutableLiveData<ViewState<List<CharacterResult>>>()
-    val characterListState: LiveData<ViewState<List<CharacterResult>>> get() = _characterListState
+
+    private val _characterListState = MutableStateFlow<ViewState<List<CharacterResult>>>(ViewState.Loading())
+    val characterListState: StateFlow<ViewState<List<CharacterResult>>> get() = _characterListState
+
     val loading = MutableLiveData<ViewState<Boolean>>()
 
     fun getAllCharactersNetwork() {
-        loading.value = ViewState.Loading(true)
+//        loading.value = ViewState.Loading(true)
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
@@ -27,9 +30,9 @@ class CharacterViewModel(private val characterUseCase : CharacterUseCase) : View
                 _characterListState.value = response
             } catch (ex: Exception) {
                 _characterListState.value =
-                    ViewState.Error(Throwable("Não foi possível carregar a lista da internet!"))
+                    ViewState.Error(Throwable("Não foi possível carregar a lista"))
             }finally {
-                loading.value = ViewState.Loading(false)
+//                loading.value = ViewState.Loading(false)
             }
         }
     }

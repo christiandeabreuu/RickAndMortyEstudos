@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.myappbancodados.R
@@ -17,12 +18,13 @@ import com.example.myappbancodados.rickandmorty.data.model.CharacterResult
 import com.example.myappbancodados.rickandmorty.ui.adapter.CharacterAdapter
 import com.example.myappbancodados.rickandmorty.ui.character.viewmodel.CharacterViewModel
 import com.example.myappbancodados.viewstate.ViewState
+import kotlinx.coroutines.flow.collect
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
     private lateinit var binding: FragmentCharacterListBinding
 
-//    private val viewModel: CharacterViewModel by lazy {
+    //    private val viewModel: CharacterViewModel by lazy {
 //        ViewModelProvider(this)[CharacterViewModel::class.java]
 //    }
     private val viewModel: CharacterViewModel by viewModel()
@@ -57,34 +59,55 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
     }
 
     private fun initObserver() {
-        viewModel.characterListState.observe(this.viewLifecycleOwner) {
-            when (it) {
-                is ViewState.Success -> {
-//                    TODO()
-//                adapter.submitList(it.data)
-//                oldAdapter.updateList(it.data.toMutableList())
-                    characterAdapter.updateList(it.data.toMutableList())
+        lifecycleScope.launchWhenStarted {
+            viewModel.characterListState.collect {
+                when (it) {
+                    is ViewState.Loading -> {
+                        binding.pbLoading.isVisible = true
+                    }
+                    is ViewState.Error -> {
+                        Toast.makeText(
+                            context,
+                            "Nao foi possivel carregar as imagens",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        binding.pbLoading.isVisible = false
+                    }
+                    is ViewState.Success -> {
+                        characterAdapter.updateList(it.data.toMutableList())
+                        binding.pbLoading.isVisible = false
+                    }
                 }
-                is ViewState.Error -> {
-                    Toast.makeText(
-                        context,
-                        "Nao foi possivel carregar as imagens",
-                        Toast.LENGTH_LONG
-                    ).show()
-//                Snackbar.make(binding.root, "Nao foi possivel carregar as imagens", Snackbar.LENGTH_LONG).show()
-                }
-                else -> {}
             }
         }
-        viewModel.loading.observe(this.viewLifecycleOwner) {
-            when (it) {
-                is ViewState.Loading -> {
-                    binding.pbLoading.isVisible = it.loading == true
-                }
-                else -> {}
-            }
-        }
+//        viewModel.characterListState.observe(this.viewLifecycleOwner) {
+//            when (it) {
+//                is ViewState.Success -> {
+////                    TODO()
+////                adapter.submitList(it.data)
+////                oldAdapter.updateList(it.data.toMutableList())
+//                    characterAdapter.updateList(it.data.toMutableList())
+//                }
+//                is ViewState.Error -> {
+//                    Toast.makeText(
+//                        context,
+//                        "Nao foi possivel carregar as imagens",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
+//                else -> {}
+//            }
+//        }
+//        viewModel.loading.observe(this.viewLifecycleOwner) {
+//            when (it) {
+//                is ViewState.Loading -> {
+//                    binding.pbLoading.isVisible = it.loading == true
+//                }
+//                else -> {}
+//            }
+//        }
     }
+
     private fun goToCharacterDetail(character: CharacterResult) {
         val bundle = bundleOf("KEY" to character)
 
