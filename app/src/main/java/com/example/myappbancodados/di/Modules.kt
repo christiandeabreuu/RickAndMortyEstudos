@@ -15,13 +15,13 @@ val characterUseCaseModules = module {
     single {  CharacterUseCase(get()) }
 }
 val rickAndMortyRepository = module {
-    single { RickAndMortyRepository(get()) }
+    single { RickAndMortyRepository() }
 
-    single {
-        Room.databaseBuilder(
-            androidApplication,
-            RunningDatabase::class.java,
-            RUNNING_DATABASE_NAME
-        ).build()
-    }
+//    single {
+//        Room.databaseBuilder(
+//            androidApplication,
+//            RunningDatabase::class.java,
+//            RUNNING_DATABASE_NAME
+//        ).build()
+//    }
 }

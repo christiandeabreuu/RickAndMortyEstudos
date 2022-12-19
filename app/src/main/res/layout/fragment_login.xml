@@ -20,9 +20,14 @@
             android:layout_marginEnd="30dp"
             android:fontFamily="@font"
             android:hint="email"
-
             app:endIconDrawable="@drawable/ic_email"
             app:endIconMode="password_toggle"
+
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+
 
             android:selectAllOnFocus="true"
             app:boxBackgroundColor="@color/white"
@@ -33,6 +38,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUserEmail"
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="textEmailAddress" />
@@ -48,7 +54,12 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:focusableInTouchMode="true"
+            android:layout_marginTop="30dp"
             android:hint="password"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopStart="20dp"
             app:boxBackgroundColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +94,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="25dp"
-
                 android:lineSpacingExtra="8dp"
                 android:text="Faça seu Login! \n ou crie uma conta agora mesmo!"
                 android:textAlignment="center"
@@ -100,7 +110,6 @@
                 android:layout_gravity="center"
                 android:layout_margin="25dp"
                 android:backgroundTint="@color/lightGray_zup"
-
                 android:text="CRIAR CONTA AGORA"
                 android:textAlignment="center"
                 android:textColor="@color/blue_zup"
@@ -110,7 +119,5 @@
                 app:layout_constraintTop_toBottomOf="@id/tvInformation" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

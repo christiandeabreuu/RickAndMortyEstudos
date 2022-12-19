@@ -33,7 +33,8 @@ class CharacterAdapter(private val clickDetail : (CharacterResult) -> Unit,) : R
 
         fun showInfo(characterResult: CharacterResult) {
             Picasso.get().load(characterResult.image).into(binding.ivItemCharacter)
-            binding.tvItemNameCharacter.text = characterResult.name
+//            binding.tvItemNameCharacter.text = characterResult.name
+            binding.tvItemId.text = characterResult.id.toString()
         }
     }
 
